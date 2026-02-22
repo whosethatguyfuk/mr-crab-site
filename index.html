@@ -15,8 +15,15 @@
 <meta name="twitter:description" content="Someone threw Squishy in. Thanos kept him forever.">
 <meta name="twitter:image" content="thanos-squishy.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
+@font-face {
+  font-family: 'Burbank';
+  src: url('BurbankBigCondensedBlack.otf') format('opentype');
+  font-weight: 900;
+  font-display: swap;
+}
+
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
@@ -36,15 +43,12 @@
   --text: #f0f6ff;
   --text-dim: #a3c4e8;
   --text-soft: #c4daf0;
-  --glass-bg: rgba(4, 30, 60, 0.55);
-  --glass-border: rgba(100, 200, 255, 0.12);
-  --glass-highlight: rgba(255, 255, 255, 0.1);
 }
 
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'Inter', -apple-system, sans-serif;
+  font-family: 'Exo 2', sans-serif;
   background: var(--deep);
   color: var(--text);
   overflow-x: hidden;
@@ -53,49 +57,134 @@ body {
   line-height: 1.6;
 }
 
-h1, h2 { font-family: 'Cormorant Garamond', serif; font-weight: 600; }
-h3 { font-family: 'Space Grotesk', sans-serif; font-weight: 600; }
+h1, h2 { font-family: 'Burbank', 'Rajdhani', sans-serif; font-weight: 900; text-transform: uppercase; }
+h3 { font-family: 'Rajdhani', sans-serif; font-weight: 700; }
 a { color: inherit; text-decoration: none; }
 
-/* ============================================
-   AQUARIUM BACKGROUND
-   ============================================ */
+/* ===== LOADING SCREEN ===== */
+.loader {
+  position: fixed; inset: 0;
+  z-index: 99999;
+  background: #000;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+.loader.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.loader video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+/* ===== SCROLL PROGRESS BAR ===== */
+.scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--aqua), var(--glow), var(--gold));
+  z-index: 10000;
+  width: 0%;
+  transition: width 0.1s linear;
+}
+
+/* ===== BACK TO TOP ===== */
+.back-to-top {
+  position: fixed;
+  bottom: 2rem; right: 2rem;
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(160deg, rgba(255,255,255,0.15), rgba(255,255,255,0.04));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-top-color: rgba(255,255,255,0.35);
+  color: #fff;
+  font-size: 1.2rem;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  z-index: 999;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 4px 16px rgba(0,20,60,0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.back-to-top:hover {
+  border-color: rgba(255,255,255,0.35);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,20,60,0.4), 0 0 30px rgba(60,218,240,0.08);
+}
+
+/* ===== TOAST NOTIFICATION ===== */
+.toast {
+  position: fixed;
+  bottom: 2rem; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  padding: 0.8rem 1.8rem;
+  background: linear-gradient(160deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(60, 218, 240, 0.3);
+  border-radius: 60px;
+  color: var(--glow);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.03em;
+  z-index: 9999;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  pointer-events: none;
+  box-shadow: 0 8px 30px rgba(0,20,60,0.4), 0 0 40px rgba(60,218,240,0.08);
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ===== CURSOR TRAIL ===== */
+.cursor-bubble {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.4), rgba(60,218,240,0.15), transparent);
+  border: 1px solid rgba(255,255,255,0.15);
+  animation: cursorBubbleFade 1.2s ease-out forwards;
+}
+
+@keyframes cursorBubbleFade {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(0.3) translateY(-40px); opacity: 0; }
+}
+
+/* ===== AQUARIUM BACKGROUND ===== */
 .aquarium-bg {
   position: fixed; inset: 0;
   z-index: 0; pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    #043a6e 0%,
-    #065a9e 15%,
-    #0870b8 30%,
-    #0a7ec8 45%,
-    #0770b0 60%,
-    #055a90 75%,
-    #033a68 90%,
-    #021a38 100%
-  );
+  background: linear-gradient(180deg, #043a6e 0%, #065a9e 15%, #0870b8 30%, #0a7ec8 45%, #0770b0 60%, #055a90 75%, #033a68 90%, #021a38 100%);
 }
 
-/* Light rays from top — like aquarium overhead lights */
 .light-rays {
   position: fixed; top: -20%; left: 0;
   width: 100%; height: 120%;
-  z-index: 1; pointer-events: none;
-  overflow: hidden;
+  z-index: 1; pointer-events: none; overflow: hidden;
 }
 
 .light-ray {
-  position: absolute;
-  top: 0;
-  width: 120px;
-  height: 120%;
-  background: linear-gradient(
-    180deg,
-    rgba(120, 220, 255, 0.18) 0%,
-    rgba(80, 200, 255, 0.08) 30%,
-    rgba(60, 180, 240, 0.03) 60%,
-    transparent 100%
-  );
+  position: absolute; top: 0; width: 120px; height: 120%;
+  background: linear-gradient(180deg, rgba(120,220,255,0.18) 0%, rgba(80,200,255,0.08) 30%, rgba(60,180,240,0.03) 60%, transparent 100%);
   transform-origin: top center;
   animation: rayDrift 12s ease-in-out infinite;
   filter: blur(30px);
@@ -114,84 +203,33 @@ a { color: inherit; text-decoration: none; }
   66% { opacity: 0.7; transform: rotate(calc(var(--r, 3deg) - 1deg)) scaleX(0.9); }
 }
 
-/* Water caustics — the dancing light patterns on aquarium walls */
-.caustics-layer {
-  position: fixed; inset: 0;
-  z-index: 1; pointer-events: none;
-  opacity: 0.4;
-}
-
-.caustics-layer canvas { width: 100%; height: 100%; }
-
 .caustics-css {
-  position: fixed; inset: 0;
-  width: 200%; height: 200%;
+  position: fixed; inset: 0; width: 200%; height: 200%;
   z-index: 1; pointer-events: none;
-  background:
-    repeating-conic-gradient(from 0deg at 20% 30%, transparent 0deg, rgba(100, 220, 255, 0.04) 3deg, transparent 6deg),
-    repeating-conic-gradient(from 45deg at 70% 60%, transparent 0deg, rgba(80, 200, 240, 0.03) 4deg, transparent 8deg),
-    repeating-conic-gradient(from 90deg at 50% 80%, transparent 0deg, rgba(120, 240, 255, 0.025) 2deg, transparent 5deg);
+  background: repeating-conic-gradient(from 0deg at 20% 30%, transparent 0deg, rgba(100,220,255,0.04) 3deg, transparent 6deg), repeating-conic-gradient(from 45deg at 70% 60%, transparent 0deg, rgba(80,200,240,0.03) 4deg, transparent 8deg);
   animation: causticsMove 12s linear infinite;
   mix-blend-mode: screen;
 }
 
-@keyframes causticsMove { 0% { transform: translate(0, 0) scale(1.1); } 100% { transform: translate(-50%, -50%) scale(1.1); } }
+@keyframes causticsMove { 0% { transform: translate(0,0) scale(1.1); } 100% { transform: translate(-50%,-50%) scale(1.1); } }
 
-/* Bright floating light blobs — like sunlight spots in water */
-.light-blob {
-  position: fixed;
-  border-radius: 50%;
-  filter: blur(80px);
-  pointer-events: none;
-  z-index: 1;
-  mix-blend-mode: screen;
-}
+.light-blob { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 1; mix-blend-mode: screen; }
+.light-blob-1 { width: 500px; height: 500px; top: -10%; left: 10%; background: radial-gradient(circle, rgba(80,200,255,0.15), transparent 70%); animation: blobFloat1 20s ease-in-out infinite; }
+.light-blob-2 { width: 400px; height: 400px; top: 30%; right: -5%; background: radial-gradient(circle, rgba(60,220,240,0.1), transparent 70%); animation: blobFloat2 25s ease-in-out infinite; }
+.light-blob-3 { width: 350px; height: 350px; bottom: 10%; left: 30%; background: radial-gradient(circle, rgba(100,180,255,0.08), transparent 70%); animation: blobFloat3 22s ease-in-out infinite; }
 
-.light-blob-1 {
-  width: 500px; height: 500px;
-  top: -10%; left: 10%;
-  background: radial-gradient(circle, rgba(80, 200, 255, 0.15), transparent 70%);
-  animation: blobFloat1 20s ease-in-out infinite;
-}
-
-.light-blob-2 {
-  width: 400px; height: 400px;
-  top: 30%; right: -5%;
-  background: radial-gradient(circle, rgba(60, 220, 240, 0.1), transparent 70%);
-  animation: blobFloat2 25s ease-in-out infinite;
-}
-
-.light-blob-3 {
-  width: 350px; height: 350px;
-  bottom: 10%; left: 30%;
-  background: radial-gradient(circle, rgba(100, 180, 255, 0.08), transparent 70%);
-  animation: blobFloat3 22s ease-in-out infinite;
-}
-
-@keyframes blobFloat1 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(40px, 30px); } }
-@keyframes blobFloat2 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-30px, -40px); } }
-@keyframes blobFloat3 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(20px, -25px); } }
+@keyframes blobFloat1 { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(40px,30px); } }
+@keyframes blobFloat2 { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(-30px,-40px); } }
+@keyframes blobFloat3 { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(20px,-25px); } }
 
 /* ===== BUBBLES ===== */
-.bubbles-container {
-  position: fixed; inset: 0;
-  pointer-events: none; z-index: 2; overflow: hidden;
-}
+.bubbles-container { position: fixed; inset: 0; pointer-events: none; z-index: 2; overflow: hidden; }
 
 .bubble {
-  position: absolute; bottom: -30px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 35% 30%,
-    rgba(255, 255, 255, 0.5),
-    rgba(150, 230, 255, 0.2) 40%,
-    rgba(80, 200, 240, 0.08) 70%,
-    transparent
-  );
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow:
-    inset 0 -3px 6px rgba(0, 100, 200, 0.08),
-    0 0 8px rgba(120, 220, 255, 0.15);
+  position: absolute; bottom: -30px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.5), rgba(150,230,255,0.2) 40%, rgba(80,200,240,0.08) 70%, transparent);
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: inset 0 -3px 6px rgba(0,100,200,0.08), 0 0 8px rgba(120,220,255,0.15);
   animation: bubbleRise linear infinite;
 }
 
@@ -204,21 +242,11 @@ a { color: inherit; text-decoration: none; }
   100% { transform: translateY(-110vh) translateX(4px) scale(0.94); opacity: 0; }
 }
 
-/* ===== PARTICLES ===== */
-.particles-container {
-  position: fixed; inset: 0;
-  pointer-events: none; z-index: 1;
-}
-
-.particle {
-  position: absolute;
-  background: rgba(180, 230, 255, 0.5);
-  border-radius: 50%;
-  animation: particleDrift linear infinite;
-}
+.particles-container { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+.particle { position: absolute; background: rgba(180,230,255,0.5); border-radius: 50%; animation: particleDrift linear infinite; }
 
 @keyframes particleDrift {
-  0% { transform: translate(0, 0); opacity: 0; }
+  0% { transform: translate(0,0); opacity: 0; }
   10% { opacity: 0.6; }
   90% { opacity: 0.5; }
   100% { transform: translate(var(--dx), var(--dy)); opacity: 0; }
@@ -229,188 +257,65 @@ a { color: inherit; text-decoration: none; }
 
 /* ===== LIQUID GLASS ===== */
 .liquid-glass {
-  background: linear-gradient(
-    160deg,
-    rgba(255, 255, 255, 0.12) 0%,
-    rgba(255, 255, 255, 0.04) 30%,
-    rgba(120, 200, 255, 0.06) 60%,
-    rgba(255, 255, 255, 0.08) 100%
-  );
+  background: linear-gradient(160deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 30%, rgba(120,200,255,0.06) 60%, rgba(255,255,255,0.08) 100%);
   backdrop-filter: blur(20px) saturate(1.6) brightness(1.1);
   -webkit-backdrop-filter: blur(20px) saturate(1.6) brightness(1.1);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-top-color: rgba(255, 255, 255, 0.3);
-  border-left-color: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-top-color: rgba(255,255,255,0.3);
+  border-left-color: rgba(255,255,255,0.22);
   border-radius: 24px;
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.15),
-    inset 0 -1px 1px rgba(0, 0, 0, 0.05),
-    0 8px 32px rgba(0, 20, 60, 0.25),
-    0 2px 6px rgba(0, 0, 0, 0.1);
-  position: relative;
-  overflow: hidden;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.15), inset 0 -1px 1px rgba(0,0,0,0.05), 0 8px 32px rgba(0,20,60,0.25), 0 2px 6px rgba(0,0,0,0.1);
+  position: relative; overflow: hidden;
 }
 
-/* Top highlight edge — like light catching glass rim */
 .liquid-glass::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 8%; right: 8%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  content: ''; position: absolute; top: 0; left: 8%; right: 8%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
   pointer-events: none;
 }
 
-/* Animated light refraction sweep */
 .liquid-glass::before {
-  content: '';
-  position: absolute;
-  top: -50%; left: -50%;
-  width: 200%; height: 200%;
-  background: conic-gradient(
-    from 0deg at 50% 50%,
-    transparent 0deg,
-    rgba(255, 255, 255, 0.04) 60deg,
-    rgba(120, 220, 255, 0.06) 120deg,
-    transparent 180deg,
-    rgba(255, 255, 255, 0.03) 240deg,
-    rgba(120, 220, 255, 0.05) 300deg,
-    transparent 360deg
-  );
-  animation: glassRefract 10s linear infinite;
-  pointer-events: none;
+  content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+  background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(255,255,255,0.04) 60deg, rgba(120,220,255,0.06) 120deg, transparent 180deg, rgba(255,255,255,0.03) 240deg, rgba(120,220,255,0.05) 300deg, transparent 360deg);
+  animation: glassRefract 10s linear infinite; pointer-events: none;
 }
 
-@keyframes glassRefract {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+@keyframes glassRefract { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 .liquid-glass:hover {
-  background: linear-gradient(
-    160deg,
-    rgba(255, 255, 255, 0.16) 0%,
-    rgba(255, 255, 255, 0.06) 30%,
-    rgba(120, 200, 255, 0.08) 60%,
-    rgba(255, 255, 255, 0.1) 100%
-  );
-  border-color: rgba(255, 255, 255, 0.25);
-  border-top-color: rgba(255, 255, 255, 0.4);
-  box-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.2),
-    inset 0 -1px 1px rgba(0, 0, 0, 0.05),
-    0 12px 40px rgba(0, 20, 60, 0.3),
-    0 0 60px rgba(100, 200, 255, 0.06);
+  background: linear-gradient(160deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.06) 30%, rgba(120,200,255,0.08) 60%, rgba(255,255,255,0.1) 100%);
+  border-color: rgba(255,255,255,0.25); border-top-color: rgba(255,255,255,0.4);
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 1px rgba(0,0,0,0.05), 0 12px 40px rgba(0,20,60,0.3), 0 0 60px rgba(100,200,255,0.06);
 }
 
 /* ===== LIQUID GLASS BUTTONS ===== */
 .btn-glass {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
+  display: inline-flex; align-items: center; gap: 0.5rem;
   padding: 0.9rem 2.4rem;
-  background: linear-gradient(
-    160deg,
-    rgba(255, 255, 255, 0.18) 0%,
-    rgba(255, 255, 255, 0.06) 40%,
-    rgba(120, 200, 255, 0.08) 70%,
-    rgba(255, 255, 255, 0.12) 100%
-  );
+  background: linear-gradient(160deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 40%, rgba(120,200,255,0.08) 70%, rgba(255,255,255,0.12) 100%);
   backdrop-filter: blur(20px) saturate(1.5) brightness(1.15);
   -webkit-backdrop-filter: blur(20px) saturate(1.5) brightness(1.15);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-top-color: rgba(255, 255, 255, 0.4);
-  border-left-color: rgba(255, 255, 255, 0.3);
-  border-radius: 60px;
-  color: #fff;
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 600;
-  font-size: 0.95rem;
-  letter-spacing: 0.03em;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.2),
-    0 4px 16px rgba(0, 30, 80, 0.3),
-    0 1px 3px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255,255,255,0.25); border-top-color: rgba(255,255,255,0.4); border-left-color: rgba(255,255,255,0.3);
+  border-radius: 60px; color: #fff;
+  font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1rem; letter-spacing: 0.06em; text-transform: uppercase;
+  cursor: pointer; position: relative; overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 4px 16px rgba(0,30,80,0.3), 0 1px 3px rgba(0,0,0,0.15);
 }
 
-/* Glass highlight line inside button */
-.btn-glass::after {
-  content: '';
-  position: absolute;
-  top: 1px; left: 15%; right: 15%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
-  pointer-events: none;
-}
+.btn-glass::after { content: ''; position: absolute; top: 1px; left: 15%; right: 15%; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent); pointer-events: none; }
 
 .btn-glass::before {
-  content: '';
-  position: absolute; inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(
-    105deg,
-    transparent 25%,
-    rgba(255, 255, 255, 0.1) 40%,
-    rgba(255, 255, 255, 0.18) 45%,
-    rgba(255, 255, 255, 0.1) 50%,
-    transparent 70%
-  );
-  opacity: 0;
-  transition: opacity 0.4s;
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  background: linear-gradient(105deg, transparent 25%, rgba(255,255,255,0.1) 40%, rgba(255,255,255,0.18) 45%, rgba(255,255,255,0.1) 50%, transparent 70%);
+  opacity: 0; transition: opacity 0.4s;
 }
 
 .btn-glass:hover::before { opacity: 1; }
+.btn-glass:hover { border-color: rgba(255,255,255,0.35); border-top-color: rgba(255,255,255,0.5); transform: translateY(-2px); box-shadow: inset 0 1px 2px rgba(255,255,255,0.25), 0 8px 30px rgba(0,40,100,0.3), 0 0 40px rgba(100,200,255,0.08); }
 
-.btn-glass:hover {
-  background: linear-gradient(
-    160deg,
-    rgba(255, 255, 255, 0.24) 0%,
-    rgba(255, 255, 255, 0.08) 40%,
-    rgba(120, 200, 255, 0.12) 70%,
-    rgba(255, 255, 255, 0.16) 100%
-  );
-  border-color: rgba(255, 255, 255, 0.35);
-  border-top-color: rgba(255, 255, 255, 0.5);
-  transform: translateY(-2px);
-  box-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.25),
-    0 8px 30px rgba(0, 40, 100, 0.3),
-    0 0 40px rgba(100, 200, 255, 0.08);
-}
-
-.btn-glass.primary {
-  background: linear-gradient(
-    160deg,
-    rgba(255, 180, 150, 0.2) 0%,
-    rgba(232, 114, 90, 0.15) 40%,
-    rgba(255, 200, 150, 0.1) 70%,
-    rgba(232, 114, 90, 0.18) 100%
-  );
-  border-color: rgba(255, 180, 150, 0.3);
-  border-top-color: rgba(255, 220, 200, 0.45);
-  color: var(--champagne);
-}
-
-.btn-glass.primary:hover {
-  background: linear-gradient(
-    160deg,
-    rgba(255, 180, 150, 0.28) 0%,
-    rgba(232, 114, 90, 0.2) 40%,
-    rgba(255, 200, 150, 0.15) 70%,
-    rgba(232, 114, 90, 0.22) 100%
-  );
-  border-color: rgba(255, 180, 150, 0.4);
-  border-top-color: rgba(255, 220, 200, 0.55);
-  box-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.2),
-    0 8px 30px rgba(232, 114, 90, 0.2),
-    0 0 60px rgba(232, 114, 90, 0.08);
-}
-
+.btn-glass.primary { background: linear-gradient(160deg, rgba(255,180,150,0.2) 0%, rgba(232,114,90,0.15) 40%, rgba(255,200,150,0.1) 70%, rgba(232,114,90,0.18) 100%); border-color: rgba(255,180,150,0.3); border-top-color: rgba(255,220,200,0.45); color: var(--champagne); }
+.btn-glass.primary:hover { border-color: rgba(255,180,150,0.4); border-top-color: rgba(255,220,200,0.55); box-shadow: inset 0 1px 2px rgba(255,255,255,0.2), 0 8px 30px rgba(232,114,90,0.2), 0 0 60px rgba(232,114,90,0.08); }
 .btn-glass.glow { animation: subtleGlow 3s ease-in-out infinite; }
 
 @keyframes subtleGlow {
@@ -418,661 +323,298 @@ a { color: inherit; text-decoration: none; }
   50% { box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 4px 16px rgba(0,30,80,0.3), 0 0 45px rgba(232,114,90,0.18), 0 0 80px rgba(232,114,90,0.06); }
 }
 
-/* Ripple */
-.ripple {
-  position: absolute;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,0.25), transparent);
-  transform: scale(0);
-  animation: rippleEffect 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  pointer-events: none;
-}
-
+.ripple { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.25), transparent); transform: scale(0); animation: rippleEffect 0.7s cubic-bezier(0.25,0.46,0.45,0.94); pointer-events: none; }
 @keyframes rippleEffect { to { transform: scale(4); opacity: 0; } }
 
 /* ===== NAVBAR ===== */
 .navbar {
-  position: fixed; top: 0; left: 0;
-  width: 100%; z-index: 1000;
+  position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
   padding: 1.2rem 3rem;
   display: flex; align-items: center; justify-content: space-between;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
   backdrop-filter: blur(24px) saturate(1.5) brightness(1.05);
   -webkit-backdrop-filter: blur(24px) saturate(1.5) brightness(1.05);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
 }
 
-.navbar.scrolled {
-  padding: 0.8rem 3rem;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
-  box-shadow: 0 4px 30px rgba(0, 30, 80, 0.2), inset 0 1px 0 rgba(255,255,255,0.1);
-  border-bottom-color: rgba(255, 255, 255, 0.12);
-}
+.navbar.scrolled { padding: 0.8rem 3rem; background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)); box-shadow: 0 4px 30px rgba(0,30,80,0.2), inset 0 1px 0 rgba(255,255,255,0.1); }
 
-.nav-logo {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.6rem; font-weight: 700;
-  color: var(--champagne);
-  display: flex; align-items: center; gap: 0.6rem;
-  letter-spacing: 0.02em;
-}
+.nav-logo { font-family: 'Burbank', 'Rajdhani', sans-serif; font-size: 1.5rem; font-weight: 900; color: var(--champagne); display: flex; align-items: center; gap: 0.6rem; letter-spacing: 0.04em; text-transform: uppercase; }
 
-.nav-logo-img {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1.5px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
+.nav-logo-img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1.5px solid rgba(255,255,255,0.15); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
 
-.nav-links {
-  display: flex; gap: 2.5rem; align-items: center;
-  list-style: none;
-}
+.nav-links { display: flex; gap: 2.5rem; align-items: center; list-style: none; }
 
-.nav-links a {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 500; font-size: 0.82rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--text-dim);
-  transition: color 0.4s;
-  position: relative;
-}
+.nav-links a { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); transition: color 0.4s; position: relative; }
 
-.nav-links a::after {
-  content: '';
-  position: absolute;
-  bottom: -4px; left: 0;
-  width: 0; height: 1px;
-  background: linear-gradient(90deg, var(--aqua), transparent);
-  transition: width 0.4s;
-}
-
+.nav-links a::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 1px; background: linear-gradient(90deg, var(--aqua), transparent); transition: width 0.4s; }
 .nav-links a:hover { color: var(--text); }
 .nav-links a:hover::after { width: 100%; }
 
-.menu-toggle {
-  display: none; flex-direction: column; gap: 5px;
-  cursor: pointer; z-index: 1001;
-}
-
-.menu-toggle span {
-  width: 24px; height: 1.5px;
-  background: var(--text-dim);
-  border-radius: 1px; transition: all 0.3s;
-}
+.menu-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; z-index: 1001; }
+.menu-toggle span { width: 24px; height: 1.5px; background: var(--text-dim); border-radius: 1px; transition: all 0.3s; }
 
 /* ===== MARQUEE ===== */
 .marquee-wrap {
   margin-top: 80px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
-  backdrop-filter: blur(16px) saturate(1.3);
-  -webkit-backdrop-filter: blur(16px) saturate(1.3);
-  padding: 0.7rem 0;
-  overflow: hidden;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+  backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  padding: 0.7rem 0; overflow: hidden;
+  border-top: 1px solid rgba(255,255,255,0.12); border-bottom: 1px solid rgba(255,255,255,0.08);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
   position: relative; z-index: 10;
 }
 
-.marquee {
-  display: flex; width: max-content;
-  animation: marqueeScroll 25s linear infinite;
-}
-
-.marquee-item {
-  white-space: nowrap;
-  padding: 0 3rem;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 0.78rem; font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-soft);
-}
+.marquee { display: flex; width: max-content; animation: marqueeScroll 25s linear infinite; }
+.marquee-item { white-space: nowrap; padding: 0 3rem; font-family: 'Rajdhani', sans-serif; font-size: 0.82rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-soft); }
 
 @keyframes marqueeScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-@keyframes marqueeGradient { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
 
 /* ===== WAVE DIVIDER ===== */
-.wave-divider {
-  width: 100%; overflow: hidden;
-  line-height: 0; position: relative; z-index: 10;
-}
+.wave-divider { width: 100%; overflow: hidden; line-height: 0; position: relative; z-index: 10; }
 .wave-divider svg { display: block; width: 100%; height: 60px; }
 .wave-divider.flip { transform: scaleY(-1); }
 
 /* ===== HERO ===== */
-.hero {
-  min-height: 100vh;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  text-align: center;
-  padding: 8rem 2rem 6rem;
-  position: relative;
-}
+.hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 8rem 2rem 6rem; position: relative; }
 
 .hero-logo {
-  width: clamp(220px, 35vw, 380px);
-  height: auto;
-  border-radius: 28px;
-  object-fit: cover;
+  width: clamp(220px, 35vw, 380px); height: auto; border-radius: 28px; object-fit: cover;
   animation: logoFloat 6s ease-in-out infinite;
-  filter: drop-shadow(0 10px 50px rgba(0, 40, 120, 0.4));
-  user-select: none;
-  cursor: pointer;
-  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  box-shadow:
-    0 12px 50px rgba(0, 30, 80, 0.4),
-    0 0 80px rgba(100, 180, 255, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  filter: drop-shadow(0 10px 50px rgba(0,40,120,0.4));
+  user-select: none; cursor: pointer;
+  transition: transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
+  border: 2px solid rgba(255,255,255,0.15);
+  box-shadow: 0 12px 50px rgba(0,30,80,0.4), 0 0 80px rgba(100,180,255,0.08);
   margin-bottom: 1.5rem;
 }
 
-.hero-logo:hover {
-  transform: scale(1.04) translateY(-6px);
-  box-shadow:
-    0 20px 70px rgba(0, 30, 80, 0.5),
-    0 0 100px rgba(100, 180, 255, 0.12);
-}
+.hero-logo:hover { transform: scale(1.04) translateY(-6px); box-shadow: 0 20px 70px rgba(0,30,80,0.5), 0 0 100px rgba(100,180,255,0.12); }
 
-@keyframes logoFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-14px); }
-}
+@keyframes logoFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
 
 .hero h1 {
-  font-size: clamp(3rem, 9vw, 6.5rem);
-  font-weight: 700; line-height: 1.05;
-  margin-bottom: 0.3rem;
+  font-size: clamp(3.5rem, 10vw, 7.5rem); line-height: 0.95; margin-bottom: 0.4rem;
   background: linear-gradient(135deg, #fff 0%, var(--aqua) 25%, var(--gold) 50%, #fff 75%, var(--aqua) 100%);
   background-size: 300% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   animation: textShine 6s ease-in-out infinite;
-  text-shadow: none;
 }
 
 @keyframes textShine { 0%, 100% { background-position: 0% center; } 50% { background-position: 200% center; } }
 
 .hero .tagline {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
-  font-weight: 400; font-style: italic;
-  color: var(--text-soft);
-  margin-bottom: 2.5rem;
-  max-width: 550px;
-  letter-spacing: 0.02em;
-  text-shadow: 0 2px 20px rgba(0, 40, 100, 0.5);
+  font-family: 'Exo 2', sans-serif; font-size: clamp(1rem, 2.5vw, 1.4rem);
+  font-weight: 300; font-style: italic; color: var(--text-soft);
+  margin-bottom: 2.5rem; max-width: 550px; letter-spacing: 0.02em;
+  text-shadow: 0 2px 20px rgba(0,40,100,0.5);
 }
 
-.hero-buttons {
-  display: flex; gap: 1rem;
-  flex-wrap: wrap; justify-content: center;
-}
+.hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
 
 /* ===== SECTIONS ===== */
-section {
-  padding: 7rem 2rem;
-  position: relative; z-index: 10;
-}
-
+section { padding: 7rem 2rem; position: relative; z-index: 10; }
 .section-header { text-align: center; margin-bottom: 4rem; }
 
-.section-label {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 0.72rem; font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: var(--aqua);
-  margin-bottom: 0.8rem;
-  display: block;
-  text-shadow: 0 0 20px rgba(60, 218, 240, 0.3);
-}
+.section-label { font-family: 'Rajdhani', sans-serif; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; color: var(--aqua); margin-bottom: 0.8rem; display: block; text-shadow: 0 0 20px rgba(60,218,240,0.3); }
 
-.section-title {
-  font-size: clamp(2.2rem, 5vw, 3.5rem);
-  color: #fff;
-  margin-bottom: 1rem;
-  line-height: 1.1;
-  text-shadow: 0 2px 30px rgba(0, 60, 150, 0.4);
-}
+.section-title { font-size: clamp(2.5rem, 6vw, 4rem); color: #fff; margin-bottom: 1rem; line-height: 1; text-shadow: 0 2px 30px rgba(0,60,150,0.4); }
 
-.section-subtitle {
-  color: var(--text-dim);
-  font-size: 1.05rem;
-  max-width: 550px;
-  margin: 0 auto;
-  font-weight: 300;
-  line-height: 1.7;
-}
+.section-subtitle { font-family: 'Exo 2', sans-serif; color: var(--text-dim); font-size: 1.05rem; max-width: 550px; margin: 0 auto; font-weight: 300; line-height: 1.7; }
 
 /* ===== LORE ===== */
-.lore-grid {
-  max-width: 1000px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-}
-
-.lore-card {
-  border-radius: 24px;
-  padding: 2.5rem;
-  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
+.lore-grid { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.lore-card { border-radius: 24px; padding: 2.5rem; transition: all 0.5s cubic-bezier(0.25,0.46,0.45,0.94); }
 .lore-card.full-width { grid-column: 1 / -1; }
-
-.lore-card .card-emoji {
-  font-size: 2.8rem; margin-bottom: 1.2rem; display: block;
-}
-
-.lore-card h3 {
-  font-size: 1.2rem; margin-bottom: 0.8rem;
-  color: #fff; letter-spacing: 0.01em;
-}
-
-.lore-card p {
-  color: var(--text-dim);
-  font-size: 0.95rem; line-height: 1.8; font-weight: 300;
-}
-
+.lore-card .card-emoji { font-size: 2.8rem; margin-bottom: 1.2rem; display: block; }
+.lore-card h3 { font-size: 1.3rem; margin-bottom: 0.8rem; color: #fff; }
+.lore-card p { font-family: 'Exo 2', sans-serif; color: var(--text-dim); font-size: 0.95rem; line-height: 1.8; font-weight: 300; }
 .lore-card .highlight { color: var(--glow); font-weight: 500; }
 .lore-card .love { color: var(--accent2); font-weight: 500; }
 
 /* ===== VIDEO SECTION ===== */
-.video-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  max-width: 800px;
-  margin: 0 auto;
-  align-items: start;
+.video-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 800px; margin: 0 auto; align-items: start; }
+.video-embed { border-radius: 20px; overflow: hidden; position: relative; }
+.video-embed blockquote { margin: 0 !important; padding: 0 !important; border: none !important; }
+.video-embed iframe { border-radius: 20px !important; border: none !important; }
+
+/* ===== LIVE CHART ===== */
+.chart-section { padding-bottom: 4rem; }
+.chart-container {
+  max-width: 900px; margin: 0 auto;
+  border-radius: 24px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 8px 32px rgba(0,20,60,0.3);
+  height: 450px;
+}
+.chart-container iframe { width: 100%; height: 100%; border: none; border-radius: 24px; }
+
+/* ===== TOKEN STATS ===== */
+.stats-bar {
+  display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap;
+  max-width: 800px; margin: 0 auto 3rem;
+  padding: 1.5rem 2rem; border-radius: 20px;
 }
 
-.video-embed {
-  border-radius: 20px;
-  overflow: hidden;
-  position: relative;
-}
-
-.video-embed blockquote {
-  margin: 0 !important;
-  padding: 0 !important;
-  border: none !important;
-}
-
-.video-embed iframe {
-  border-radius: 20px !important;
-  border: none !important;
-}
+.stat-item { text-align: center; }
+.stat-value { font-family: 'Burbank', 'Rajdhani', sans-serif; font-size: 1.8rem; color: #fff; line-height: 1.1; }
+.stat-label { font-family: 'Rajdhani', sans-serif; font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 600; margin-top: 0.2rem; }
 
 /* ===== TOKENOMICS ===== */
-.token-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem; max-width: 900px; margin: 0 auto;
-}
-
-.token-card {
-  border-radius: 24px;
-  padding: 2.5rem 2rem;
-  text-align: center;
-  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.token-card:hover {
-  transform: translateY(-6px);
-}
-
+.token-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; max-width: 900px; margin: 0 auto; }
+.token-card { border-radius: 24px; padding: 2.5rem 2rem; text-align: center; transition: all 0.5s cubic-bezier(0.25,0.46,0.45,0.94); }
+.token-card:hover { transform: translateY(-6px); }
 .token-card .icon { font-size: 2rem; margin-bottom: 1rem; display: block; }
-
-.token-card .value {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 2.2rem; font-weight: 700;
-  color: #fff;
-  margin-bottom: 0.4rem;
-}
-
-.token-card .label {
-  font-family: 'Space Grotesk', sans-serif;
-  color: var(--text-dim);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.15em; font-weight: 500;
-}
-
-.token-card::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 10%; right: 10%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--aqua), transparent);
-  opacity: 0; transition: opacity 0.4s;
-}
+.token-card .value { font-family: 'Burbank', 'Rajdhani', sans-serif; font-size: 2.4rem; color: #fff; margin-bottom: 0.4rem; }
+.token-card .label { font-family: 'Rajdhani', sans-serif; color: var(--text-dim); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 600; }
+.token-card::after { content: ''; position: absolute; bottom: 0; left: 10%; right: 10%; height: 1px; background: linear-gradient(90deg, transparent, var(--aqua), transparent); opacity: 0; transition: opacity 0.4s; }
 .token-card:hover::after { opacity: 0.4; }
 
 /* ===== HOW TO BUY ===== */
-.steps {
-  max-width: 680px; margin: 0 auto;
-  display: grid; gap: 1.2rem;
-}
-
-.step {
-  display: flex; align-items: flex-start; gap: 1.5rem;
-  border-radius: 20px;
-  padding: 1.8rem 2rem;
-  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.step:hover {
-  transform: translateX(6px);
-}
-
-.step-num {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 2.2rem; font-weight: 700;
-  color: var(--aqua);
-  min-width: 45px; opacity: 0.5;
-  line-height: 1;
-}
-
-.step h3 {
-  font-size: 1rem; margin-bottom: 0.4rem;
-  color: var(--text); letter-spacing: 0.01em;
-}
-
-.step p {
-  color: var(--text-dim);
-  font-size: 0.9rem; line-height: 1.7; font-weight: 300;
-}
+.steps { max-width: 680px; margin: 0 auto; display: grid; gap: 1.2rem; }
+.step { display: flex; align-items: flex-start; gap: 1.5rem; border-radius: 20px; padding: 1.8rem 2rem; transition: all 0.5s cubic-bezier(0.25,0.46,0.45,0.94); }
+.step:hover { transform: translateX(6px); }
+.step-num { font-family: 'Burbank', 'Rajdhani', sans-serif; font-size: 2.5rem; color: var(--aqua); min-width: 45px; opacity: 0.5; line-height: 1; }
+.step h3 { font-size: 1.1rem; margin-bottom: 0.4rem; color: var(--text); }
+.step p { font-family: 'Exo 2', sans-serif; color: var(--text-dim); font-size: 0.9rem; line-height: 1.7; font-weight: 300; }
 
 /* ===== ROADMAP ===== */
-.timeline {
-  max-width: 680px; margin: 0 auto;
-  position: relative; padding-left: 50px;
-}
-
-.timeline::before {
-  content: '';
-  position: absolute;
-  left: 18px; top: 0;
-  width: 1px; height: 100%;
-  background: linear-gradient(180deg, var(--aqua), var(--glow), var(--accent));
-  opacity: 0.4;
-}
-
-.timeline-item {
-  position: relative;
-  margin-bottom: 2rem;
-  border-radius: 20px;
-  padding: 2rem 2.2rem;
-  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.timeline-item:hover {
-  transform: translateX(4px);
-}
-
-.timeline-item::before {
-  content: '';
-  position: absolute;
-  left: -40px; top: 2rem;
-  width: 10px; height: 10px;
-  background: var(--aqua);
-  border-radius: 50%;
-  box-shadow: 0 0 15px rgba(60, 218, 240, 0.5), 0 0 30px rgba(60, 218, 240, 0.2);
-}
-
-.timeline-item .phase {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 0.7rem; color: var(--aqua);
-  text-transform: uppercase;
-  letter-spacing: 0.18em; font-weight: 600;
-  margin-bottom: 0.3rem;
-}
-
-.timeline-item h3 {
-  font-size: 1.1rem; margin-bottom: 0.6rem;
-  color: #fff;
-}
-
+.timeline { max-width: 680px; margin: 0 auto; position: relative; padding-left: 50px; }
+.timeline::before { content: ''; position: absolute; left: 18px; top: 0; width: 1px; height: 100%; background: linear-gradient(180deg, var(--aqua), var(--glow), var(--accent)); opacity: 0.4; }
+.timeline-item { position: relative; margin-bottom: 2rem; border-radius: 20px; padding: 2rem 2.2rem; transition: all 0.5s cubic-bezier(0.25,0.46,0.45,0.94); }
+.timeline-item:hover { transform: translateX(4px); }
+.timeline-item::before { content: ''; position: absolute; left: -40px; top: 2rem; width: 10px; height: 10px; background: var(--aqua); border-radius: 50%; box-shadow: 0 0 15px rgba(60,218,240,0.5), 0 0 30px rgba(60,218,240,0.2); }
+.timeline-item .phase { font-family: 'Rajdhani', sans-serif; font-size: 0.72rem; color: var(--aqua); text-transform: uppercase; letter-spacing: 0.18em; font-weight: 700; margin-bottom: 0.3rem; }
+.timeline-item h3 { font-size: 1.2rem; margin-bottom: 0.6rem; color: #fff; }
 .timeline-item ul { list-style: none; }
+.timeline-item li { font-family: 'Exo 2', sans-serif; color: var(--text-dim); padding: 0.15rem 0; font-size: 0.9rem; font-weight: 300; }
+.timeline-item li::before { content: '\2014\00a0'; color: rgba(60,218,240,0.35); }
 
-.timeline-item li {
-  color: var(--text-dim);
-  padding: 0.15rem 0; font-size: 0.9rem; font-weight: 300;
+/* ===== MEME GALLERY ===== */
+.gallery-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+  max-width: 700px; margin: 0 auto;
 }
-.timeline-item li::before { content: '\2014\00a0'; color: rgba(60, 218, 240, 0.35); }
+
+.gallery-item {
+  border-radius: 16px; overflow: hidden; aspect-ratio: 1;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+  cursor: pointer;
+}
+
+.gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+.gallery-item:hover { border-color: rgba(255,255,255,0.25); transform: scale(1.03); box-shadow: 0 8px 30px rgba(0,20,60,0.4); }
+.gallery-item:hover img { transform: scale(1.08); }
 
 /* ===== COMMUNITY ===== */
 .community { text-align: center; }
-
-.social-grid {
-  display: flex; gap: 1.5rem;
-  justify-content: center; flex-wrap: wrap;
-  max-width: 650px; margin: 0 auto;
-}
-
-.social-card {
-  flex: 1; min-width: 180px;
-  border-radius: 24px;
-  padding: 2.2rem 1.5rem;
-  text-align: center; cursor: pointer; display: block;
-  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.social-card:hover {
-  transform: translateY(-6px);
-}
-
+.social-grid { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; max-width: 650px; margin: 0 auto; }
+.social-card { flex: 1; min-width: 180px; border-radius: 24px; padding: 2.2rem 1.5rem; text-align: center; cursor: pointer; display: block; transition: all 0.5s cubic-bezier(0.25,0.46,0.45,0.94); }
+.social-card:hover { transform: translateY(-6px); }
 .social-card .social-icon { font-size: 2rem; margin-bottom: 0.8rem; }
-
-.social-card .social-name {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 600; font-size: 0.95rem;
-  margin-bottom: 0.3rem; color: var(--text);
-}
-
-.social-card .social-handle {
-  color: var(--text-dim); font-size: 0.8rem; font-weight: 300;
-}
+.social-card .social-name { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 0.3rem; color: var(--text); }
+.social-card .social-handle { font-family: 'Exo 2', sans-serif; color: var(--text-dim); font-size: 0.8rem; font-weight: 300; }
 
 /* ===== SEAWEED ===== */
-.seaweed-wrap {
-  position: relative; z-index: 10;
-  height: 80px; overflow: hidden;
-  display: flex; align-items: flex-end;
-  justify-content: center; gap: 35px;
-  padding: 0 2rem; opacity: 0.5;
-}
-
-.seaweed {
-  width: 14px; height: 70px;
-  background: linear-gradient(180deg, rgba(40, 180, 120, 0.4), rgba(30, 150, 100, 0.15));
-  border-radius: 50% 50% 0 0;
-  transform-origin: bottom center;
-  animation: seaweedSway 4s ease-in-out infinite;
-}
-
+.seaweed-wrap { position: relative; z-index: 10; height: 80px; overflow: hidden; display: flex; align-items: flex-end; justify-content: center; gap: 35px; padding: 0 2rem; opacity: 0.5; }
+.seaweed { width: 14px; height: 70px; background: linear-gradient(180deg, rgba(40,180,120,0.4), rgba(30,150,100,0.15)); border-radius: 50% 50% 0 0; transform-origin: bottom center; animation: seaweedSway 4s ease-in-out infinite; }
 .seaweed:nth-child(2n) { height: 50px; animation-delay: -0.6s; animation-duration: 4.5s; }
 .seaweed:nth-child(3n) { height: 75px; animation-delay: -1.2s; animation-duration: 3.5s; }
 .seaweed:nth-child(4n) { height: 40px; animation-delay: -1.8s; }
 .seaweed:nth-child(5n) { height: 60px; animation-delay: -0.9s; animation-duration: 5s; }
-
-@keyframes seaweedSway {
-  0%, 100% { transform: rotate(-5deg); }
-  50% { transform: rotate(5deg); }
-}
+@keyframes seaweedSway { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
 
 /* ===== FOOTER ===== */
-.footer {
-  position: relative; z-index: 10;
-  text-align: center;
-  padding: 3rem 2rem 2.5rem;
-  border-top: 1px solid rgba(100, 200, 255, 0.06);
-  background: rgba(2, 15, 35, 0.7);
-  backdrop-filter: blur(20px);
-}
-
-.footer-logo {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 20px rgba(0, 30, 80, 0.3);
-  margin-bottom: 1.2rem;
-  opacity: 0.85;
-  transition: all 0.4s;
-}
-
-.footer-logo:hover {
-  opacity: 1;
-  transform: scale(1.05);
-  box-shadow: 0 4px 30px rgba(60, 218, 240, 0.15);
-}
-
-.footer .contract {
-  display: inline-block;
-  padding: 0.7rem 1.5rem;
-  background: linear-gradient(160deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03));
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-top-color: rgba(255, 255, 255, 0.25);
-  border-radius: 12px;
-  font-family: 'Space Grotesk', monospace;
-  font-size: 0.8rem; color: var(--aqua);
-  margin-bottom: 1.5rem;
-  cursor: pointer; transition: all 0.4s;
-  letter-spacing: 0.02em;
-}
-
-.footer .contract:hover {
-  background: linear-gradient(160deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
-  border-color: rgba(255, 255, 255, 0.25);
-}
-
-.footer .disclaimer {
-  color: var(--text-dim);
-  font-size: 0.75rem;
-  max-width: 550px; margin: 0 auto;
-  line-height: 1.7; font-weight: 300;
-  opacity: 0.7;
-}
+.footer { position: relative; z-index: 10; text-align: center; padding: 3rem 2rem 2.5rem; border-top: 1px solid rgba(100,200,255,0.06); background: rgba(2,15,35,0.7); backdrop-filter: blur(20px); }
+.footer-logo { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.1); box-shadow: 0 4px 20px rgba(0,30,80,0.3); margin-bottom: 1.2rem; opacity: 0.85; transition: all 0.4s; }
+.footer-logo:hover { opacity: 1; transform: scale(1.05); }
+.footer .contract { display: inline-block; padding: 0.7rem 1.5rem; background: linear-gradient(160deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03)); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.15); border-top-color: rgba(255,255,255,0.25); border-radius: 12px; font-family: 'Rajdhani', monospace; font-size: 0.85rem; color: var(--aqua); margin-bottom: 1.5rem; cursor: pointer; transition: all 0.4s; letter-spacing: 0.02em; font-weight: 600; }
+.footer .contract:hover { background: linear-gradient(160deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05)); border-color: rgba(255,255,255,0.25); }
+.footer .disclaimer { font-family: 'Exo 2', sans-serif; color: var(--text-dim); font-size: 0.75rem; max-width: 550px; margin: 0 auto; line-height: 1.7; font-weight: 300; opacity: 0.7; }
 
 /* ===== SCROLL REVEAL ===== */
-.reveal {
-  opacity: 0; transform: translateY(30px);
-  transition: opacity 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.9s cubic-bezier(0.25,0.46,0.45,0.94), transform 0.9s cubic-bezier(0.25,0.46,0.45,0.94); }
 .reveal.visible { opacity: 1; transform: translateY(0); }
-
-.reveal-left {
-  opacity: 0; transform: translateX(-40px);
-  transition: opacity 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
+.reveal-left { opacity: 0; transform: translateX(-40px); transition: opacity 0.9s cubic-bezier(0.25,0.46,0.45,0.94), transform 0.9s cubic-bezier(0.25,0.46,0.45,0.94); }
 .reveal-left.visible { opacity: 1; transform: translateX(0); }
-
-.reveal-right {
-  opacity: 0; transform: translateX(40px);
-  transition: opacity 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
+.reveal-right { opacity: 0; transform: translateX(40px); transition: opacity 0.9s cubic-bezier(0.25,0.46,0.45,0.94), transform 0.9s cubic-bezier(0.25,0.46,0.45,0.94); }
 .reveal-right.visible { opacity: 1; transform: translateX(0); }
-
-.reveal-d1 { transition-delay: 0.1s; }
-.reveal-d2 { transition-delay: 0.2s; }
-.reveal-d3 { transition-delay: 0.3s; }
-.reveal-d4 { transition-delay: 0.4s; }
+.reveal-d1 { transition-delay: 0.1s; } .reveal-d2 { transition-delay: 0.2s; } .reveal-d3 { transition-delay: 0.3s; } .reveal-d4 { transition-delay: 0.4s; }
 
 /* ===== MOBILE ===== */
 @media (max-width: 768px) {
   .navbar { padding: 1rem 1.5rem; }
   .navbar.scrolled { padding: 0.7rem 1.5rem; }
-
-  .nav-links {
-    display: none;
-    position: fixed; inset: 0;
-    background: rgba(2, 18, 40, 0.98);
-    backdrop-filter: blur(30px);
-    flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 2.5rem;
-  }
+  .nav-links { display: none; position: fixed; inset: 0; background: rgba(2,18,40,0.98); backdrop-filter: blur(30px); flex-direction: column; align-items: center; justify-content: center; gap: 2.5rem; }
   .nav-links.active { display: flex; }
   .menu-toggle { display: flex; }
-
   .hero { padding: 7rem 1.5rem 4rem; }
   .hero-logo { width: 200px; border-radius: 20px; }
   .hero-buttons { flex-direction: column; align-items: center; }
-
   .lore-grid { grid-template-columns: 1fr; }
   .token-grid { grid-template-columns: 1fr; }
   .video-grid { grid-template-columns: 1fr; max-width: 380px; }
+  .gallery-grid { grid-template-columns: repeat(2, 1fr); }
   .social-grid { flex-direction: column; align-items: center; }
-
+  .stats-bar { gap: 1.5rem; }
+  .stat-value { font-size: 1.4rem; }
+  .chart-container { height: 350px; }
   .marquee-item { padding: 0 1.5rem; font-size: 0.7rem; }
-
   .timeline { padding-left: 35px; }
   .timeline-item::before { left: -25px; width: 8px; height: 8px; }
-
   section { padding: 5rem 1.5rem; }
-
   .light-ray { filter: blur(40px); }
-  .light-blob-1, .light-blob-2, .light-blob-3 { opacity: 0.6; }
+  .back-to-top { bottom: 1.2rem; right: 1.2rem; width: 42px; height: 42px; font-size: 1rem; }
 }
 
-/* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--deep); }
-::-webkit-scrollbar-thumb { background: rgba(60, 218, 240, 0.15); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(60, 218, 240, 0.3); }
+::-webkit-scrollbar-thumb { background: rgba(60,218,240,0.15); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(60,218,240,0.3); }
 </style>
 </head>
 <body>
 
-<!-- AQUARIUM BACKGROUND -->
-<div class="aquarium-bg"></div>
-
-<!-- Light rays from overhead aquarium lights -->
-<div class="light-rays">
-  <div class="light-ray" style="--r:3deg"></div>
-  <div class="light-ray" style="--r:-2deg"></div>
-  <div class="light-ray" style="--r:5deg"></div>
-  <div class="light-ray" style="--r:-3deg"></div>
-  <div class="light-ray" style="--r:4deg"></div>
-  <div class="light-ray" style="--r:-4deg"></div>
+<!-- LOADING SCREEN -->
+<div class="loader" id="loader">
+  <video autoplay muted playsinline id="loaderVideo">
+    <source src="loading.mp4" type="video/mp4">
+  </video>
 </div>
 
-<!-- Caustics shimmer -->
-<div class="caustics-css"></div>
+<!-- SCROLL PROGRESS -->
+<div class="scroll-progress" id="scrollProgress"></div>
 
-<!-- Floating light blobs -->
+<!-- BACK TO TOP -->
+<div class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- AQUARIUM BACKGROUND -->
+<div class="aquarium-bg"></div>
+<div class="light-rays">
+  <div class="light-ray" style="--r:3deg"></div><div class="light-ray" style="--r:-2deg"></div>
+  <div class="light-ray" style="--r:5deg"></div><div class="light-ray" style="--r:-3deg"></div>
+  <div class="light-ray" style="--r:4deg"></div><div class="light-ray" style="--r:-4deg"></div>
+</div>
+<div class="caustics-css"></div>
 <div class="light-blob light-blob-1"></div>
 <div class="light-blob light-blob-2"></div>
 <div class="light-blob light-blob-3"></div>
-
-<!-- Bubbles -->
 <div class="bubbles-container" id="bubbles"></div>
-
-<!-- Particles (floating debris in water) -->
 <div class="particles-container" id="particles"></div>
 
 <div class="content">
 
-  <!-- Navbar -->
   <nav class="navbar" id="navbar">
     <a href="#" class="nav-logo"><img src="thanos-squishy.png" alt="Thanos" class="nav-logo-img"> $Thanos</a>
     <ul class="nav-links" id="navLinks">
       <li><a href="#lore">Lore</a></li>
       <li><a href="#videos">Videos</a></li>
+      <li><a href="#chart">Chart</a></li>
       <li><a href="#tokenomics">Tokenomics</a></li>
       <li><a href="#how-to-buy">How to Buy</a></li>
       <li><a href="#roadmap">Roadmap</a></li>
@@ -1084,7 +626,6 @@ section {
     </div>
   </nav>
 
-  <!-- Marquee -->
   <div class="marquee-wrap">
     <div class="marquee" id="marquee">
       <div class="marquee-item">🦀 Thanos & Squishy Forever 🐊</div>
@@ -1102,7 +643,6 @@ section {
     </div>
   </div>
 
-  <!-- Hero -->
   <section class="hero" id="hero">
     <img src="thanos-squishy.png" alt="Thanos the Blue Crab & Squishy" class="hero-logo" id="heroLogo">
     <h1>$Thanos</h1>
@@ -1113,12 +653,7 @@ section {
     </div>
   </section>
 
-  <!-- Wave -->
-  <div class="wave-divider">
-    <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
-      <path d="M0,30 C200,55 400,5 600,30 C800,55 1000,5 1200,30 L1200,60 L0,60 Z" fill="rgba(60,218,240,0.04)"/>
-    </svg>
-  </div>
+  <div class="wave-divider"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,30 C200,55 400,5 600,30 C800,55 1000,5 1200,30 L1200,60 L0,60 Z" fill="rgba(60,218,240,0.04)"/></svg></div>
 
   <!-- Lore -->
   <section class="lore" id="lore">
@@ -1127,20 +662,17 @@ section {
       <h2 class="section-title">A Tale of the Deep</h2>
       <p class="section-subtitle">Some friendships are chosen. This one was fate.</p>
     </div>
-
     <div class="lore-grid">
       <div class="lore-card liquid-glass reveal reveal-d1">
         <span class="card-emoji">🦀</span>
         <h3>Thanos the Blue Crab</h3>
         <p>Down in the quiet blue of the ocean floor, <span class="highlight">Thanos</span> kept to himself. A blue crab of few words and iron claws, he had carved out a humble home among the coral &mdash; a small cave, perfectly still, perfectly his. He didn't need much. Just the current, the silence, and the slow rhythm of the tides.</p>
       </div>
-
       <div class="lore-card liquid-glass reveal reveal-d2">
         <span class="card-emoji">🐊</span>
         <h3>The Arrival</h3>
         <p>Then one day, something fell from above. A <span class="love">soft, squishy little alligator toy</span> tumbled through the water and landed right at the entrance of his cave. Someone up there had accidentally thrown it in &mdash; a careless toss, a child's mistake. Or maybe the ocean had plans of its own. Thanos just stared. The little green gator stared back with its big plush eyes.</p>
       </div>
-
       <div class="lore-card liquid-glass full-width reveal reveal-d3">
         <span class="card-emoji">❤️</span>
         <h3>Inseparable</h3>
@@ -1151,12 +683,7 @@ section {
     </div>
   </section>
 
-  <!-- Wave -->
-  <div class="wave-divider flip">
-    <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
-      <path d="M0,30 C200,55 400,5 600,30 C800,55 1000,5 1200,30 L1200,60 L0,60 Z" fill="rgba(60,218,240,0.03)"/>
-    </svg>
-  </div>
+  <div class="wave-divider flip"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,30 C200,55 400,5 600,30 C800,55 1000,5 1200,30 L1200,60 L0,60 Z" fill="rgba(60,218,240,0.03)"/></svg></div>
 
   <!-- Videos -->
   <section class="videos" id="videos">
@@ -1179,12 +706,38 @@ section {
     </div>
   </section>
 
-  <!-- Wave -->
-  <div class="wave-divider">
-    <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
-      <path d="M0,30 C200,55 400,5 600,30 C800,55 1000,5 1200,30 L1200,60 L0,60 Z" fill="rgba(60,218,240,0.04)"/>
-    </svg>
-  </div>
+  <div class="wave-divider"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,30 C200,55 400,5 600,30 C800,55 1000,5 1200,30 L1200,60 L0,60 Z" fill="rgba(60,218,240,0.04)"/></svg></div>
+
+  <!-- Live Chart -->
+  <section class="chart-section" id="chart">
+    <div class="section-header reveal">
+      <span class="section-label">Live Chart</span>
+      <h2 class="section-title">Track the Wave</h2>
+    </div>
+    <div class="stats-bar liquid-glass reveal">
+      <div class="stat-item">
+        <div class="stat-value" id="statPrice">$0.0000</div>
+        <div class="stat-label">Price</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="statMcap">$0</div>
+        <div class="stat-label">Market Cap</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="statHolders">0</div>
+        <div class="stat-label">Holders</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="statVolume">$0</div>
+        <div class="stat-label">24h Volume</div>
+      </div>
+    </div>
+    <div class="chart-container reveal">
+      <iframe src="https://dexscreener.com/solana?embed=1&theme=dark&info=0" title="DEX Chart"></iframe>
+    </div>
+  </section>
+
+  <div class="wave-divider flip"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,30 C200,55 400,5 600,30 C800,55 1000,5 1200,30 L1200,60 L0,60 Z" fill="rgba(60,218,240,0.03)"/></svg></div>
 
   <!-- Tokenomics -->
   <section class="tokenomics" id="tokenomics">
@@ -1212,12 +765,7 @@ section {
     </div>
   </section>
 
-  <!-- Wave -->
-  <div class="wave-divider">
-    <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
-      <path d="M0,30 C200,55 400,5 600,30 C800,55 1000,5 1200,30 L1200,60 L0,60 Z" fill="rgba(60,218,240,0.04)"/>
-    </svg>
-  </div>
+  <div class="wave-divider"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,30 C200,55 400,5 600,30 C800,55 1000,5 1200,30 L1200,60 L0,60 Z" fill="rgba(60,218,240,0.04)"/></svg></div>
 
   <!-- How to Buy -->
   <section class="how-to-buy" id="how-to-buy">
@@ -1229,41 +777,24 @@ section {
     <div class="steps">
       <div class="step liquid-glass reveal-left reveal-d1">
         <div class="step-num">01</div>
-        <div>
-          <h3>Create a Wallet</h3>
-          <p>Download Phantom or Solflare. Set up your Solana wallet and guard your seed phrase like Thanos guards Squishy.</p>
-        </div>
+        <div><h3>Create a Wallet</h3><p>Download Phantom or Solflare. Set up your Solana wallet and guard your seed phrase like Thanos guards Squishy.</p></div>
       </div>
       <div class="step liquid-glass reveal-right reveal-d2">
         <div class="step-num">02</div>
-        <div>
-          <h3>Get Some SOL</h3>
-          <p>Buy SOL on any exchange and transfer it to your wallet. This is your ticket to the deep.</p>
-        </div>
+        <div><h3>Get Some SOL</h3><p>Buy SOL on any exchange and transfer it to your wallet. This is your ticket to the deep.</p></div>
       </div>
       <div class="step liquid-glass reveal-left reveal-d3">
         <div class="step-num">03</div>
-        <div>
-          <h3>Swap on Jupiter</h3>
-          <p>Visit jup.ag, connect your wallet, paste the $Thanos contract address, and swap. Slippage 1-2%.</p>
-        </div>
+        <div><h3>Swap on Jupiter</h3><p>Visit jup.ag, connect your wallet, paste the $Thanos contract address, and swap. Slippage 1-2%.</p></div>
       </div>
       <div class="step liquid-glass reveal-right reveal-d4">
         <div class="step-num">04</div>
-        <div>
-          <h3>Welcome to the Family</h3>
-          <p>You're one of us now. Hold tight, join the community, and ride the current with Thanos & Squishy.</p>
-        </div>
+        <div><h3>Welcome to the Family</h3><p>You're one of us now. Hold tight, join the community, and ride the current with Thanos & Squishy.</p></div>
       </div>
     </div>
   </section>
 
-  <!-- Wave -->
-  <div class="wave-divider flip">
-    <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
-      <path d="M0,30 C200,55 400,5 600,30 C800,55 1000,5 1200,30 L1200,60 L0,60 Z" fill="rgba(60,218,240,0.03)"/>
-    </svg>
-  </div>
+  <div class="wave-divider flip"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,30 C200,55 400,5 600,30 C800,55 1000,5 1200,30 L1200,60 L0,60 Z" fill="rgba(60,218,240,0.03)"/></svg></div>
 
   <!-- Roadmap -->
   <section class="roadmap" id="roadmap">
@@ -1273,55 +804,33 @@ section {
       <p class="section-subtitle">From a quiet cave to the entire ocean.</p>
     </div>
     <div class="timeline">
-      <div class="timeline-item liquid-glass reveal reveal-d1">
-        <div class="phase">Phase 1 &mdash; The Meeting</div>
-        <h3>🐚 Emergence</h3>
-        <ul>
-          <li>Token launch on Solana</li>
-          <li>Website & socials live</li>
-          <li>Community building begins</li>
-          <li>CoinGecko & CMC listing</li>
-        </ul>
-      </div>
-      <div class="timeline-item liquid-glass reveal reveal-d2">
-        <div class="phase">Phase 2 &mdash; The Bond</div>
-        <h3>🌊 Momentum</h3>
-        <ul>
-          <li>1,000+ holders</li>
-          <li>Partnerships & collaborations</li>
-          <li>Meme contests & community events</li>
-          <li>DEXScreener trending</li>
-        </ul>
-      </div>
-      <div class="timeline-item liquid-glass reveal reveal-d3">
-        <div class="phase">Phase 3 &mdash; The Family</div>
-        <h3>🦞 Expansion</h3>
-        <ul>
-          <li>10,000+ holders</li>
-          <li>CEX listings</li>
-          <li>$Thanos merch collection</li>
-          <li>Thanos & Squishy NFT collection</li>
-        </ul>
-      </div>
-      <div class="timeline-item liquid-glass reveal reveal-d4">
-        <div class="phase">Phase 4 &mdash; Forever</div>
-        <h3>❤️ Legacy</h3>
-        <ul>
-          <li>Tier 1 exchange listings</li>
-          <li>Global community recognition</li>
-          <li>Thanos DAO governance</li>
-          <li>This story never ends</li>
-        </ul>
-      </div>
+      <div class="timeline-item liquid-glass reveal reveal-d1"><div class="phase">Phase 1 &mdash; The Meeting</div><h3>🐚 Emergence</h3><ul><li>Token launch on Solana</li><li>Website & socials live</li><li>Community building begins</li><li>CoinGecko & CMC listing</li></ul></div>
+      <div class="timeline-item liquid-glass reveal reveal-d2"><div class="phase">Phase 2 &mdash; The Bond</div><h3>🌊 Momentum</h3><ul><li>1,000+ holders</li><li>Partnerships & collaborations</li><li>Meme contests & community events</li><li>DEXScreener trending</li></ul></div>
+      <div class="timeline-item liquid-glass reveal reveal-d3"><div class="phase">Phase 3 &mdash; The Family</div><h3>🦀 Expansion</h3><ul><li>10,000+ holders</li><li>CEX listings</li><li>$Thanos merch collection</li><li>Thanos & Squishy NFT collection</li></ul></div>
+      <div class="timeline-item liquid-glass reveal reveal-d4"><div class="phase">Phase 4 &mdash; Forever</div><h3>❤️ Legacy</h3><ul><li>Tier 1 exchange listings</li><li>Global community recognition</li><li>Thanos DAO governance</li><li>This story never ends</li></ul></div>
     </div>
   </section>
 
-  <!-- Wave -->
-  <div class="wave-divider">
-    <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
-      <path d="M0,30 C200,55 400,5 600,30 C800,55 1000,5 1200,30 L1200,60 L0,60 Z" fill="rgba(60,218,240,0.04)"/>
-    </svg>
-  </div>
+  <div class="wave-divider"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,30 C200,55 400,5 600,30 C800,55 1000,5 1200,30 L1200,60 L0,60 Z" fill="rgba(60,218,240,0.04)"/></svg></div>
+
+  <!-- Gallery -->
+  <section class="gallery" id="gallery">
+    <div class="section-header reveal">
+      <span class="section-label">Gallery</span>
+      <h2 class="section-title">The Meme Vault</h2>
+      <p class="section-subtitle">Save them. Share them. Spread the love.</p>
+    </div>
+    <div class="gallery-grid">
+      <div class="gallery-item reveal reveal-d1"><img src="thanos-squishy.png" alt="Thanos & Squishy"></div>
+      <div class="gallery-item reveal reveal-d2"><img src="mr-crab-squishy.png" alt="Mr Crab & Squishy"></div>
+      <div class="gallery-item reveal reveal-d3"><img src="mr-crab.png" alt="Thanos the crab"></div>
+      <div class="gallery-item reveal reveal-d1"><img src="squishy.png" alt="Squishy"></div>
+      <div class="gallery-item reveal reveal-d2"><img src="thanos-squishy.png" alt="Thanos & Squishy 2"></div>
+      <div class="gallery-item reveal reveal-d3"><img src="mr-crab-squishy.png" alt="Together"></div>
+    </div>
+  </section>
+
+  <div class="wave-divider flip"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,30 C200,55 400,5 600,30 C800,55 1000,5 1200,30 L1200,60 L0,60 Z" fill="rgba(60,218,240,0.03)"/></svg></div>
 
   <!-- Community -->
   <section class="community" id="community">
@@ -1331,25 +840,12 @@ section {
       <p class="section-subtitle">Where Thanos goes, the family follows.</p>
     </div>
     <div class="social-grid">
-      <a href="#" class="social-card liquid-glass reveal reveal-d1" target="_blank">
-        <div class="social-icon">𝕏</div>
-        <div class="social-name">Twitter / X</div>
-        <div class="social-handle">@ThanosOnSol</div>
-      </a>
-      <a href="#" class="social-card liquid-glass reveal reveal-d2" target="_blank">
-        <div class="social-icon">✈️</div>
-        <div class="social-name">Telegram</div>
-        <div class="social-handle">t.me/ThanosFamily</div>
-      </a>
-      <a href="#" class="social-card liquid-glass reveal reveal-d3" target="_blank">
-        <div class="social-icon">📊</div>
-        <div class="social-name">DexScreener</div>
-        <div class="social-handle">Live Chart</div>
-      </a>
+      <a href="#" class="social-card liquid-glass reveal reveal-d1" target="_blank"><div class="social-icon">𝕏</div><div class="social-name">Twitter / X</div><div class="social-handle">@ThanosOnSol</div></a>
+      <a href="#" class="social-card liquid-glass reveal reveal-d2" target="_blank"><div class="social-icon">✈️</div><div class="social-name">Telegram</div><div class="social-handle">t.me/ThanosFamily</div></a>
+      <a href="#" class="social-card liquid-glass reveal reveal-d3" target="_blank"><div class="social-icon">📊</div><div class="social-name">DexScreener</div><div class="social-handle">Live Chart</div></a>
     </div>
   </section>
 
-  <!-- Seaweed -->
   <div class="seaweed-wrap">
     <div class="seaweed"></div><div class="seaweed"></div><div class="seaweed"></div>
     <div class="seaweed"></div><div class="seaweed"></div><div class="seaweed"></div>
@@ -1357,18 +853,62 @@ section {
     <div class="seaweed"></div><div class="seaweed"></div><div class="seaweed"></div>
   </div>
 
-  <!-- Footer -->
   <footer class="footer">
     <img src="thanos-squishy.png" alt="Thanos & Squishy" class="footer-logo">
-    <div class="contract" onclick="copyCA()" id="contractAddr" title="Click to copy">
-      CA: THANOS...xxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    </div>
+    <div class="contract" onclick="copyCA()" id="contractAddr" title="Click to copy">CA: THANOS...xxxxxxxxxxxxxxxxxxxxxxxxxxxx</div>
     <p class="disclaimer">$Thanos is a memecoin with no intrinsic value or expectation of financial return. Created for entertainment and community. Do your own research. Not financial advice.</p>
   </footer>
 
 </div>
 
 <script>
+// ===== LOADING SCREEN =====
+const loader = document.getElementById('loader');
+const loaderVideo = document.getElementById('loaderVideo');
+
+loaderVideo.addEventListener('ended', () => { loader.classList.add('hidden'); });
+setTimeout(() => { loader.classList.add('hidden'); }, 6000);
+
+// ===== SCROLL PROGRESS =====
+window.addEventListener('scroll', () => {
+  const scrollTop = document.documentElement.scrollTop;
+  const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  const progress = (scrollTop / scrollHeight) * 100;
+  document.getElementById('scrollProgress').style.width = progress + '%';
+});
+
+// ===== BACK TO TOP =====
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('backToTop');
+  btn.classList.toggle('visible', window.scrollY > 600);
+});
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ===== CURSOR BUBBLE TRAIL =====
+let lastTrail = 0;
+document.addEventListener('mousemove', (e) => {
+  const now = Date.now();
+  if (now - lastTrail < 80) return;
+  lastTrail = now;
+  const b = document.createElement('div');
+  b.className = 'cursor-bubble';
+  const s = Math.random() * 8 + 4;
+  b.style.width = s + 'px';
+  b.style.height = s + 'px';
+  b.style.left = e.clientX + 'px';
+  b.style.top = e.clientY + 'px';
+  document.body.appendChild(b);
+  setTimeout(() => b.remove(), 1200);
+});
+
+// ===== BUBBLES =====
 function createBubbles() {
   const c = document.getElementById('bubbles');
   const n = window.innerWidth < 768 ? 20 : 45;
@@ -1376,8 +916,7 @@ function createBubbles() {
     const b = document.createElement('div');
     b.className = 'bubble';
     const s = Math.random() * 24 + 4;
-    b.style.width = s + 'px';
-    b.style.height = s + 'px';
+    b.style.width = s + 'px'; b.style.height = s + 'px';
     b.style.left = Math.random() * 100 + '%';
     b.style.animationDuration = (Math.random() * 14 + 8) + 's';
     b.style.animationDelay = (Math.random() * 18) + 's';
@@ -1385,6 +924,7 @@ function createBubbles() {
   }
 }
 
+// ===== PARTICLES =====
 function createParticles() {
   const c = document.getElementById('particles');
   const n = window.innerWidth < 768 ? 20 : 50;
@@ -1398,8 +938,7 @@ function createParticles() {
     p.style.animationDuration = (Math.random() * 20 + 12) + 's';
     p.style.animationDelay = (Math.random() * 15) + 's';
     const s = Math.random() * 3 + 1;
-    p.style.width = s + 'px';
-    p.style.height = s + 'px';
+    p.style.width = s + 'px'; p.style.height = s + 'px';
     c.appendChild(p);
   }
 }
@@ -1407,28 +946,20 @@ function createParticles() {
 function initScrollReveal() {
   const els = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
   const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
-    });
+    entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } });
   }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
   els.forEach(el => observer.observe(el));
 }
 
 function initNavbar() {
   const nav = document.getElementById('navbar');
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 60);
-  });
+  window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 60); });
 }
 
 function initRipple() {
   document.querySelectorAll('.btn-glass, .social-card').forEach(el => {
     el.addEventListener('click', function(e) {
-      const r = document.createElement('span');
-      r.className = 'ripple';
+      const r = document.createElement('span'); r.className = 'ripple';
       const rect = this.getBoundingClientRect();
       r.style.left = (e.clientX - rect.left) + 'px';
       r.style.top = (e.clientY - rect.top) + 'px';
@@ -1438,43 +969,26 @@ function initRipple() {
   });
 }
 
-function toggleMenu() {
-  document.getElementById('navLinks').classList.toggle('active');
-}
+function toggleMenu() { document.getElementById('navLinks').classList.toggle('active'); }
 
 document.querySelectorAll('#navLinks a').forEach(link => {
-  link.addEventListener('click', () => {
-    document.getElementById('navLinks').classList.remove('active');
-  });
+  link.addEventListener('click', () => { document.getElementById('navLinks').classList.remove('active'); });
 });
 
 function copyCA() {
-  const el = document.getElementById('contractAddr');
-  navigator.clipboard.writeText('THANOS...xxxxxxxxxxxxxxxxxxxxxxxxxxxx').then(() => {
-    const orig = el.textContent;
-    el.textContent = 'Copied to clipboard';
-    el.style.borderColor = 'rgba(60, 218, 240, 0.4)';
-    setTimeout(() => {
-      el.textContent = orig;
-      el.style.borderColor = '';
-    }, 2000);
-  });
+  navigator.clipboard.writeText('THANOS...xxxxxxxxxxxxxxxxxxxxxxxxxxxx').then(() => { showToast('Contract address copied!'); });
 }
 
 const heroLogo = document.getElementById('heroLogo');
 heroLogo.addEventListener('click', () => {
-  heroLogo.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+  heroLogo.style.transition = 'transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94)';
   heroLogo.style.transform = 'scale(1.08) rotate(2deg)';
   setTimeout(() => { heroLogo.style.transform = ''; }, 500);
-
   for (let i = 0; i < 10; i++) {
-    const b = document.createElement('div');
-    b.className = 'bubble';
-    b.style.position = 'fixed';
-    b.style.zIndex = '999';
+    const b = document.createElement('div'); b.className = 'bubble';
+    b.style.position = 'fixed'; b.style.zIndex = '999';
     const size = Math.random() * 16 + 6;
-    b.style.width = size + 'px';
-    b.style.height = size + 'px';
+    b.style.width = size + 'px'; b.style.height = size + 'px';
     const rect = heroLogo.getBoundingClientRect();
     b.style.left = (rect.left + rect.width * Math.random()) + 'px';
     b.style.bottom = (window.innerHeight - rect.top) + 'px';
@@ -1494,14 +1008,9 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-  createBubbles();
-  createParticles();
-  initScrollReveal();
-  initNavbar();
-  initRipple();
+  createBubbles(); createParticles(); initScrollReveal(); initNavbar(); initRipple();
 });
 </script>
 <script async src="https://www.tiktok.com/embed.js"></script>
-
 </body>
 </html>
