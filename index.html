@@ -570,13 +570,23 @@ section { padding: 7rem 2rem; position: relative; z-index: 10; }
 .timeline-item li::before { content: '\2014\00a0'; color: rgba(60,218,240,0.35); }
 
 /* ===== MEME GALLERY ===== */
-.gallery-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
-  max-width: 700px; margin: 0 auto;
+.gallery-wrapper { max-width: 700px; margin: 0 auto; position: relative; }
+
+.gallery-viewport { overflow: hidden; border-radius: 20px; }
+
+.gallery-track {
+  display: flex;
+  transition: transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+
+.gallery-page {
+  min-width: 100%; display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8rem; padding: 0 0.1rem;
 }
 
 .gallery-item {
-  border-radius: 16px; overflow: hidden; aspect-ratio: 1;
+  border-radius: 14px; overflow: hidden; aspect-ratio: 1;
   border: 1px solid rgba(255,255,255,0.1);
   transition: all 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
   cursor: pointer;
@@ -585,6 +595,31 @@ section { padding: 7rem 2rem; position: relative; z-index: 10; }
 .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
 .gallery-item:hover { border-color: rgba(255,255,255,0.25); transform: scale(1.03); box-shadow: 0 8px 30px rgba(0,20,60,0.4); }
 .gallery-item:hover img { transform: scale(1.08); }
+
+.gallery-controls {
+  display: flex; align-items: center; justify-content: center; gap: 1.2rem;
+  margin-top: 1.5rem;
+}
+
+.gallery-btn {
+  width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2);
+  background: linear-gradient(160deg, rgba(255,255,255,0.12), rgba(255,255,255,0.03));
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  color: #fff; font-size: 1.1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s;
+}
+
+.gallery-btn:hover { border-color: rgba(60,218,240,0.4); background: linear-gradient(160deg, rgba(255,255,255,0.2), rgba(255,255,255,0.06)); box-shadow: 0 0 20px rgba(60,218,240,0.1); }
+.gallery-btn:disabled { opacity: 0.25; cursor: default; pointer-events: none; }
+
+.gallery-dots { display: flex; gap: 0.5rem; }
+.gallery-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(255,255,255,0.2); border: none; cursor: pointer;
+  transition: all 0.3s; padding: 0;
+}
+.gallery-dot.active { background: var(--aqua); box-shadow: 0 0 10px rgba(60,218,240,0.5); width: 24px; border-radius: 4px; }
 
 /* ===== COMMUNITY ===== */
 .community { text-align: center; }
@@ -634,7 +669,8 @@ section { padding: 7rem 2rem; position: relative; z-index: 10; }
   .lore-grid { grid-template-columns: 1fr; }
   .token-grid { grid-template-columns: 1fr; }
   .video-grid { grid-template-columns: 1fr; max-width: 380px; }
-  .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+  .gallery-page { gap: 0.5rem; }
+  .gallery-item { border-radius: 10px; }
   .social-grid { flex-direction: column; align-items: center; }
   .stats-bar { gap: 1.5rem; }
   .stat-value { font-size: 1.4rem; }
@@ -904,13 +940,37 @@ section { padding: 7rem 2rem; position: relative; z-index: 10; }
       <h2 class="section-title">The Meme Vault</h2>
       <p class="section-subtitle">Save them. Share them. Spread the love.</p>
     </div>
-    <div class="gallery-grid">
-      <div class="gallery-item reveal reveal-d1"><img src="thanos-squishy.png" alt="Thanos & Squishy"></div>
-      <div class="gallery-item reveal reveal-d2"><img src="mr-crab-squishy.png" alt="Mr Crab & Squishy"></div>
-      <div class="gallery-item reveal reveal-d3"><img src="mr-crab.png" alt="Thanos the crab"></div>
-      <div class="gallery-item reveal reveal-d1"><img src="squishy.png" alt="Squishy"></div>
-      <div class="gallery-item reveal reveal-d2"><img src="thanos-squishy.png" alt="Thanos & Squishy 2"></div>
-      <div class="gallery-item reveal reveal-d3"><img src="mr-crab-squishy.png" alt="Together"></div>
+    <div class="gallery-wrapper reveal" id="galleryWrapper">
+      <div class="gallery-viewport">
+        <div class="gallery-track" id="galleryTrack">
+          <div class="gallery-page">
+            <div class="gallery-item"><img src="memes/IMG_20260222_170509_076.jpg" alt="Thanos meme"></div>
+            <div class="gallery-item"><img src="memes/IMG_20260222_170510_778.jpg" alt="Thanos meme"></div>
+            <div class="gallery-item"><img src="memes/IMG_20260222_170511_723.jpg" alt="Thanos meme"></div>
+            <div class="gallery-item"><img src="memes/IMG_20260222_170514_546.jpg" alt="Thanos meme"></div>
+            <div class="gallery-item"><img src="memes/IMG_20260222_170521_609.jpg" alt="Thanos meme"></div>
+            <div class="gallery-item"><img src="memes/IMG_20260222_170522_881.jpg" alt="Thanos meme"></div>
+            <div class="gallery-item"><img src="memes/IMG_20260222_170527_941.jpg" alt="Thanos meme"></div>
+            <div class="gallery-item"><img src="memes/IMG_20260222_170530_280.jpg" alt="Thanos meme"></div>
+            <div class="gallery-item"><img src="memes/IMG_20260222_170533_486.jpg" alt="Thanos meme"></div>
+          </div>
+          <div class="gallery-page">
+            <div class="gallery-item"><img src="memes/IMG_20260222_170538_047.jpg" alt="Thanos meme"></div>
+            <div class="gallery-item"><img src="memes/IMG_20260222_170546_226.jpg" alt="Thanos meme"></div>
+            <div class="gallery-item"><img src="memes/IMG_20260222_170547_845.jpg" alt="Thanos meme"></div>
+            <div class="gallery-item"><img src="memes/IMG_20260222_170549_886.jpg" alt="Thanos meme"></div>
+            <div class="gallery-item"><img src="memes/IMG_20260222_170554_765.jpg" alt="Thanos meme"></div>
+            <div class="gallery-item"><img src="memes/IMG_20260222_170556_971.jpg" alt="Thanos meme"></div>
+            <div class="gallery-item"><img src="memes/IMG_20260222_170559_997.jpg" alt="Thanos meme"></div>
+            <div class="gallery-item"><img src="memes/IMG_20260222_170603_381.jpg" alt="Thanos meme"></div>
+          </div>
+        </div>
+      </div>
+      <div class="gallery-controls">
+        <button class="gallery-btn" id="galleryPrev" onclick="galleryNav(-1)">←</button>
+        <div class="gallery-dots" id="galleryDots"></div>
+        <button class="gallery-btn" id="galleryNext" onclick="galleryNav(1)">→</button>
+      </div>
     </div>
   </section>
 
@@ -1303,8 +1363,53 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   });
 });
 
+// ===== PAGINATED GALLERY =====
+var galleryCurrent = 0;
+var galleryTotal = 0;
+
+function initGallery() {
+  var track = document.getElementById('galleryTrack');
+  var pages = track.querySelectorAll('.gallery-page');
+  galleryTotal = pages.length;
+  var dotsContainer = document.getElementById('galleryDots');
+  dotsContainer.innerHTML = '';
+  for (var i = 0; i < galleryTotal; i++) {
+    var dot = document.createElement('button');
+    dot.className = 'gallery-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('data-idx', i);
+    dot.onclick = function() { galleryGoTo(parseInt(this.getAttribute('data-idx'))); };
+    dotsContainer.appendChild(dot);
+  }
+  updateGalleryBtns();
+
+  // Touch swipe
+  var startX = 0, diffX = 0;
+  var viewport = track.parentElement;
+  viewport.addEventListener('touchstart', function(e) { startX = e.touches[0].clientX; }, { passive: true });
+  viewport.addEventListener('touchmove', function(e) { diffX = e.touches[0].clientX - startX; }, { passive: true });
+  viewport.addEventListener('touchend', function() {
+    if (Math.abs(diffX) > 50) galleryNav(diffX < 0 ? 1 : -1);
+    diffX = 0;
+  });
+}
+
+function galleryNav(dir) { galleryGoTo(galleryCurrent + dir); }
+
+function galleryGoTo(idx) {
+  if (idx < 0 || idx >= galleryTotal) return;
+  galleryCurrent = idx;
+  document.getElementById('galleryTrack').style.transform = 'translateX(-' + (galleryCurrent * 100) + '%)';
+  document.querySelectorAll('.gallery-dot').forEach(function(d, i) { d.classList.toggle('active', i === galleryCurrent); });
+  updateGalleryBtns();
+}
+
+function updateGalleryBtns() {
+  document.getElementById('galleryPrev').disabled = galleryCurrent === 0;
+  document.getElementById('galleryNext').disabled = galleryCurrent === galleryTotal - 1;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  createBubbles(); createParticles(); initScrollReveal(); initNavbar(); initRipple();
+  createBubbles(); createParticles(); initScrollReveal(); initNavbar(); initRipple(); initGallery();
 });
 </script>
 <script async src="https://www.tiktok.com/embed.js"></script>
