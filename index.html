@@ -1140,11 +1140,15 @@ function showToast(msg) {
   const tagline = document.querySelector('.hero .tagline');
   if (!tagline) return;
   const text = tagline.textContent;
-  tagline.textContent = '';
+  tagline.innerHTML = '';
   tagline.style.opacity = '1';
   text.split('').forEach((char, i) => {
     const span = document.createElement('span');
-    span.textContent = char;
+    if (char === ' ') {
+      span.innerHTML = '&nbsp;';
+    } else {
+      span.textContent = char;
+    }
     span.style.opacity = '0';
     span.style.display = 'inline-block';
     span.style.transform = 'translateY(8px)';
