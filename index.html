@@ -972,15 +972,19 @@ function showToast(msg) {
 
   document.addEventListener('mousemove', function(e) {
     var now = Date.now();
-    if (now - lastTime < 50) return;
+    if (now - lastTime < 25) return;
     lastTime = now;
 
-    var b = document.createElement('div');
-    b.className = 'cursor-bubble';
-    var s = Math.random() * 10 + 5;
-    b.style.cssText = 'width:' + s + 'px;height:' + s + 'px;left:' + (e.clientX - s/2) + 'px;top:' + (e.clientY - s/2) + 'px;';
-    document.body.appendChild(b);
-    setTimeout(function() { b.remove(); }, 1400);
+    for (var i = 0; i < 3; i++) {
+      var b = document.createElement('div');
+      b.className = 'cursor-bubble';
+      var s = Math.random() * 18 + 8;
+      var ox = (Math.random() - 0.5) * 20;
+      var oy = (Math.random() - 0.5) * 20;
+      b.style.cssText = 'width:' + s + 'px;height:' + s + 'px;left:' + (e.clientX - s/2 + ox) + 'px;top:' + (e.clientY - s/2 + oy) + 'px;animation-duration:' + (1 + Math.random() * 0.8) + 's;';
+      document.body.appendChild(b);
+      setTimeout(function(el) { el.remove(); }.bind(null, b), 2000);
+    }
   }, false);
 })();
 
