@@ -972,16 +972,12 @@ function showToast(msg) {
     if (now - lastTime < 25) return;
     lastTime = now;
 
-    for (var i = 0; i < 5; i++) {
-      var b = document.createElement('div');
-      b.className = 'cursor-bubble';
-      var s = Math.random() * 40 + 15;
-      var ox = (Math.random() - 0.5) * 40;
-      var oy = (Math.random() - 0.5) * 40;
-      b.style.cssText = 'width:' + s + 'px;height:' + s + 'px;left:' + (e.clientX - s/2 + ox) + 'px;top:' + (e.clientY - s/2 + oy) + 'px;animation-duration:' + (1.2 + Math.random() * 1.3) + 's;';
-      document.body.appendChild(b);
-      setTimeout(function(el) { el.remove(); }.bind(null, b), 2600);
-    }
+    var b = document.createElement('div');
+    b.className = 'cursor-bubble';
+    var s = Math.random() * 40 + 15;
+    b.style.cssText = 'width:' + s + 'px;height:' + s + 'px;left:' + (e.clientX - s/2) + 'px;top:' + (e.clientY - s/2) + 'px;animation-duration:' + (1.2 + Math.random() * 1.3) + 's;';
+    document.body.appendChild(b);
+    setTimeout(function(el) { el.remove(); }.bind(null, b), 2600);
   }, false);
 })();
 
