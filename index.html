@@ -6,6 +6,14 @@
 <title>$Thanos - Thanos the Blue Crab & Squishy</title>
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="favicon.png">
+<meta property="og:title" content="$Thanos - Thanos the Blue Crab & Squishy">
+<meta property="og:description" content="Someone threw Squishy in. Thanos kept him forever. A memecoin love story from the deep.">
+<meta property="og:image" content="thanos-squishy.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="$Thanos - Thanos the Blue Crab & Squishy">
+<meta name="twitter:description" content="Someone threw Squishy in. Thanos kept him forever.">
+<meta name="twitter:image" content="thanos-squishy.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -450,7 +458,14 @@ a { color: inherit; text-decoration: none; }
   letter-spacing: 0.02em;
 }
 
-.nav-logo span { font-size: 1.5rem; }
+.nav-logo-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
 
 .nav-links {
   display: flex; gap: 2.5rem; align-items: center;
@@ -906,6 +921,24 @@ section {
   backdrop-filter: blur(20px);
 }
 
+.footer-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 30, 80, 0.3);
+  margin-bottom: 1.2rem;
+  opacity: 0.85;
+  transition: all 0.4s;
+}
+
+.footer-logo:hover {
+  opacity: 1;
+  transform: scale(1.05);
+  box-shadow: 0 4px 30px rgba(60, 218, 240, 0.15);
+}
+
 .footer .contract {
   display: inline-block;
   padding: 0.7rem 1.5rem;
@@ -1036,7 +1069,7 @@ section {
 
   <!-- Navbar -->
   <nav class="navbar" id="navbar">
-    <a href="#" class="nav-logo"><span>🦀</span> $Thanos</a>
+    <a href="#" class="nav-logo"><img src="thanos-squishy.png" alt="Thanos" class="nav-logo-img"> $Thanos</a>
     <ul class="nav-links" id="navLinks">
       <li><a href="#lore">Lore</a></li>
       <li><a href="#videos">Videos</a></li>
@@ -1326,6 +1359,7 @@ section {
 
   <!-- Footer -->
   <footer class="footer">
+    <img src="thanos-squishy.png" alt="Thanos & Squishy" class="footer-logo">
     <div class="contract" onclick="copyCA()" id="contractAddr" title="Click to copy">
       CA: THANOS...xxxxxxxxxxxxxxxxxxxxxxxxxxxx
     </div>
